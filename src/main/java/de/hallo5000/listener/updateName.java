@@ -12,6 +12,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
+
 public class updateName implements Listener {
 
     @EventHandler
@@ -21,6 +22,7 @@ public class updateName implements Listener {
                                                                             .replace("&","§")+" §f"+p.getName();
         p.sendPlayerListHeader(Component.text("Welcome to the official SAW Minecraft Server!\n"));
         p.playerListName(Component.text(formattedName));
+        p.setPlayerListOrder(Main.lp.getGroupManager().getGroup(Main.lp.getUserManager().getUser(p.getUniqueId()).getPrimaryGroup()).getWeight().orElse(0));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

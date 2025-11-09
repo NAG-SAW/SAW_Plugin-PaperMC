@@ -8,15 +8,12 @@ import net.luckperms.api.model.user.User;
 import net.luckperms.api.node.NodeType;
 import net.luckperms.api.node.types.InheritanceNode;
 import org.bukkit.GameMode;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BookMeta;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,21 +27,6 @@ public class handleGuests implements Listener {
         if(!u.getPrimaryGroup().equals("default")) return;
         p.setGameMode(GameMode.ADVENTURE);
         p.setSleepingIgnored(true);
-        ItemStack i = new ItemStack(Material.WRITTEN_BOOK);
-        BookMeta book = (BookMeta) i.getItemMeta();
-        book.setAuthor("hallo5000 - SAW");
-        book.setTitle("§6§lWelcome - Willkommen");
-        book.setGeneration(BookMeta.Generation.ORIGINAL);
-        book.addPages(
-                Component.text("Willkommen auf dem SAW Minecraft Server").appendNewline().appendNewline()
-                    .append(Component.text("Auf dieser Seite folgen einige grundlegende Informationen um auf diesem Server zu navigieren: WIP"))
-                    .append(Component.text("Commands: "))
-                    .append(Component.text("/authenticate"))
-                    .append(Component.text("/friend")),
-                Component.text("Welcome").appendNewline().append(Component.text("WIP"))
-        );
-        i.setItemMeta(book);
-        //p.openBook(i);
         p.sendMessage("Welcome to the §5SAW Minecraft Server§f!");
         p.sendMessage("If you are a resident, please use §6/authenticate §fwhile you're connected to the dorm-network");
         p.sendMessage("If you just know someone from the dorm and want to play with them, they can use §6/friend §fto add you to the server");
@@ -161,6 +143,24 @@ public class handleGuests implements Listener {
     public void onEntityPlace(EntityPlaceEvent e){
         if(Main.lp.getUserManager().getUser(e.getPlayer().getUniqueId()).getPrimaryGroup().equals("default")){
             e.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onFoodLevelChange(FoodLevelChangeEvent e){
+        if(e.getEntity() instanceof Player p){
+            if(Main.lp.getUserManager().getUser(p.getUniqueId()).getPrimaryGroup().equals("default")){
+                e.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onEntityTarget(EntityTargetEvent e){
+        if(e.getTarget() instanceof Player p){
+            if(Main.lp.getUserManager().getUser(p.getUniqueId()).getPrimaryGroup().equals("default")){
+                e.setCancelled(true);
+            }
         }
     }
 }
