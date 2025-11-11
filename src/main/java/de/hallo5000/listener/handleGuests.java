@@ -24,9 +24,11 @@ public class handleGuests implements Listener {
     public void onPlayerJoin(PlayerJoinEvent e){
         Player p = e.getPlayer();
         User u = Main.lp.getUserManager().getUser(p.getUniqueId());
-        if(!u.getPrimaryGroup().equals("default")) return;
+        if(!u.getPrimaryGroup().equals("default")){
+            if(p.getGameMode().equals(GameMode.ADVENTURE)) p.setGameMode(GameMode.SURVIVAL);
+            return;
+        }
         p.setGameMode(GameMode.ADVENTURE);
-        p.setSleepingIgnored(true);
         p.sendMessage("Welcome to the §5SAW Minecraft Server§f!");
         p.sendMessage("If you are a resident, please use §6/authenticate §fwhile you're connected to the dorm-network");
         p.sendMessage("If you just know someone from the dorm and want to play with them, they can use §6/friend §fto add you to the server");
@@ -52,7 +54,6 @@ public class handleGuests implements Listener {
             //promote from default while keeping default
             Main.getPlugin(Main.class).getServer().getScheduler().runTask(Main.getPlugin(Main.class), ()->{
                 p.setGameMode(GameMode.SURVIVAL);
-                p.setSleepingIgnored(false);
             });
         }else if(groupsBefore.size() > 1 && groupsAfter.size() == 1 && groupsAfter.contains("default")){
             //had multiple groups and removed everything except default || demote
@@ -64,7 +65,6 @@ public class handleGuests implements Listener {
             //promote from default while removing default
             Main.getPlugin(Main.class).getServer().getScheduler().runTask(Main.getPlugin(Main.class), ()->{
                 p.setGameMode(GameMode.SURVIVAL);
-                p.setSleepingIgnored(false);
             });
         }else if(groupsBefore.size() == 1 && !groupsBefore.contains("default") && groupsAfter.contains("default")){
             //had 1 group != default and replaced it with default || demote
@@ -83,7 +83,6 @@ public class handleGuests implements Listener {
             //promoting from unknown/'nothing' higher than default
             Main.getPlugin(Main.class).getServer().getScheduler().runTask(Main.getPlugin(Main.class), ()->{
                 p.setGameMode(GameMode.SURVIVAL);
-                p.setSleepingIgnored(false);
             });
         }
         //ignoring one case where groupsAfter is Empty because this would also be triggered in the promotion/demotion process

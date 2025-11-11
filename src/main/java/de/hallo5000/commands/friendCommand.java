@@ -2,7 +2,8 @@ package de.hallo5000.commands;
 
 import de.hallo5000.main.Main;
 import net.luckperms.api.context.ImmutableContextSet;
-import net.luckperms.api.model.user.User;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -13,27 +14,40 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 public class friendCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
         if(sender.hasPermission("saw.friend")) {
             if (args.length == 1) {
+                UUID uuid;
                 Player p = Main.getPlugin(Main.class).getServer().getPlayer(args[0]);
                 if (p != null) {
                     if(p.hasPermission("group.friend")){
                         sender.sendMessage("§cYou can only add guests as friends to the server!");
                         return true;
                     }
-                    User u = Main.lp.getUserManager().getUser(p.getUniqueId());
-                    Main.lp.getTrackManager().getTrack("base-track").promote(u, ImmutableContextSet.empty());
-                    Main.lp.getUserManager().saveUser(u);
-                    sender.sendMessage("§aYou've succesfully added §f" + p.getName() + " §aas friend to to the server!");
-                    if(sender instanceof Player) Main.logCommand(command, sender, ((Player) sender).getUniqueId().toString(), p.getName());
-                    else Main.logCommand(command, sender, "NOT-A-PLAYER", p.getName());
+                    uuid = p.getUniqueId();
                 }else{
-                    sender.sendMessage("§cThe player was not found!");
+                    OfflinePlayer op = Bukkit.getOfflinePlayer(args[0]);
+                    if(op.hasPlayedBefore()){
+                        uuid = op.getUniqueId();
+                    }else{
+                        sender.sendMessage("§cThe player was not found!");
+                        return true;
+                    }
                 }
+                Main.lp.getUserManager().loadUser(uuid)
+                            .thenApplyAsync(u -> {
+                                Main.lp.getTrackManager().getTrack("base-track").promote(u, ImmutableContextSet.empty());
+                                Main.lp.getUserManager().saveUser(u);
+                                return u;
+                            }).thenAcceptAsync(u -> {
+                            sender.sendMessage("§aYou've succesfully added §f" + u.getUsername() + " §aas friend to to the server!");
+                            if(sender instanceof Player) Main.logCommand(command, sender, ((Player) sender).getUniqueId().toString(), u.getUsername());
+                            else Main.logCommand(command, sender, "NOT-A-PLAYER", u.getUsername());
+                        });
             }else return false;
         }else{
             sender.sendMessage("§cYou do not have permission to use this command!");

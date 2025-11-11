@@ -46,6 +46,6 @@ public class updateName implements Listener {
         p.playerListName(Component.text(
                 u.getCachedData().getMetaData().getPrefix().replace("&", "§") + " §f" + p.getName()
         ));
-
+        p.setPlayerListOrder(Main.lp.getGroupManager().getGroup(u.getPrimaryGroup()).getWeight().orElse(0));
     }
 }
