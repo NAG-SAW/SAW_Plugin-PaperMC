@@ -4,6 +4,7 @@ import de.hallo5000.main.Main;
 import io.papermc.paper.event.player.PlayerItemFrameChangeEvent;
 import io.papermc.paper.event.player.PrePlayerAttackEntityEvent;
 import net.luckperms.api.model.user.User;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -11,7 +12,9 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.*;
+import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 public class handleGuests implements Listener {
@@ -119,6 +122,13 @@ public class handleGuests implements Listener {
             if (Main.lp.getUserManager().getUser(p.getUniqueId()).getPrimaryGroup().equals("default")) {
                 e.setCancelled(true);
             }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent e){
+        if (Main.lp.getUserManager().getUser(e.getPlayer().getUniqueId()).getPrimaryGroup().equals("default")) {
+            e.setCancelled(true);
         }
     }
 
