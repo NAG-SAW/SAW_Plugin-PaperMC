@@ -45,7 +45,7 @@ public class Main extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new updateName(), this);
         getServer().getPluginManager().registerEvents(new handleGuests(), this);
         lp.getEventBus().subscribe(this, NodeMutateEvent.class, updateName::onNodeMutate);
-        lp.getEventBus().subscribe(this, NodeMutateEvent.class, handleGuests::onNodeMutate);
+        //lp.getEventBus().subscribe(this, NodeMutateEvent.class, handleGuests::onNodeMutate);
 
         //create /friend-logfile
         if(!getDataFolder().exists()) getDataFolder().mkdir();

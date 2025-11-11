@@ -1,22 +1,18 @@
 package de.hallo5000.listener;
 
 import de.hallo5000.main.Main;
+import io.papermc.paper.event.player.PlayerItemFrameChangeEvent;
 import io.papermc.paper.event.player.PrePlayerAttackEntityEvent;
-import net.kyori.adventure.text.Component;
-import net.luckperms.api.event.node.NodeMutateEvent;
 import net.luckperms.api.model.user.User;
-import net.luckperms.api.node.NodeType;
-import net.luckperms.api.node.types.InheritanceNode;
-import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockDamageEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class handleGuests implements Listener {
 
@@ -24,16 +20,13 @@ public class handleGuests implements Listener {
     public void onPlayerJoin(PlayerJoinEvent e){
         Player p = e.getPlayer();
         User u = Main.lp.getUserManager().getUser(p.getUniqueId());
-        if(!u.getPrimaryGroup().equals("default")){
-            if(p.getGameMode().equals(GameMode.ADVENTURE)) p.setGameMode(GameMode.SURVIVAL);
-            return;
-        }
-        p.setGameMode(GameMode.ADVENTURE);
+        if(!u.getPrimaryGroup().equals("default")) return;
         p.sendMessage("Welcome to the §5SAW Minecraft Server§f!");
         p.sendMessage("If you are a resident, please use §6/authenticate §fwhile you're connected to the dorm-network");
         p.sendMessage("If you just know someone from the dorm and want to play with them, they can use §6/friend §fto add you to the server");
     }
 
+    /* NO LONGER USED
     public static void onNodeMutate(NodeMutateEvent e){
         if(e.isGroup()) return;
         User u = (User) e.getTarget();
@@ -86,7 +79,7 @@ public class handleGuests implements Listener {
             });
         }
         //ignoring one case where groupsAfter is Empty because this would also be triggered in the promotion/demotion process
-    }
+    }*/
 
     @EventHandler
     public void onPlayerDropItem(PlayerDropItemEvent e){
@@ -160,6 +153,34 @@ public class handleGuests implements Listener {
             if(Main.lp.getUserManager().getUser(p.getUniqueId()).getPrimaryGroup().equals("default")){
                 e.setCancelled(true);
             }
+        }
+    }
+
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent e){
+        if(Main.lp.getUserManager().getUser(e.getPlayer().getUniqueId()).getPrimaryGroup().equals("default")) {
+            e.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onBlockDamage(BlockDamageEvent e){
+        if(Main.lp.getUserManager().getUser(e.getPlayer().getUniqueId()).getPrimaryGroup().equals("default")) {
+            e.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent e){
+        if(Main.lp.getUserManager().getUser(e.getPlayer().getUniqueId()).getPrimaryGroup().equals("default")) {
+            e.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onItemFrameChange(PlayerItemFrameChangeEvent e){
+        if(Main.lp.getUserManager().getUser(e.getPlayer().getUniqueId()).getPrimaryGroup().equals("default")) {
+            e.setCancelled(true);
         }
     }
 }
